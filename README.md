@@ -45,7 +45,7 @@ Tested on Windows 10.
 | 0x57 0x41 0x53 0x44     | WASD         |
 | 0x1B                    | Escape       |
 | 0x0D                    | Enter        |
-| 0x11                    | Control      |
+| 0xA2                    | Control      |
 | 0x12                    | Alt          |
 | 0x10                    | Shift        |
 | 0x20                    | Space        |

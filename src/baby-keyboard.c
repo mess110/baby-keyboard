@@ -1,116 +1,37 @@
 #include <stdio.h>
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <windows.h>
 
-#include "cli.c"
-// #include "hook.c"
+#include "hook.c"
 
-#define listen(msg)                       \
-  while (GetMessage(msg, NULL, 0, 0) > 0) \
-  {                                       \
-  }
+#define VERSION_STRING "1.0.0"
 
-HHOOK hook;
-LPMSG msg;
-int *allowedKeys;
-int numberOfArguments;
-
-// The keyboard hook. If we want the key to work, we call CallNextHookEx,
-// otherwise we return 1
-LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
+void printHelp()
 {
-  if (code == HC_ACTION)
-  {
-    if (wParam == WM_KEYDOWN || wParam == WM_KEYUP)
-    {
-      int vkCode = ((KBDLLHOOKSTRUCT *)lParam)->vkCode;
-      for (int i = 0; i < numberOfArguments; i++)
-      {
-        if (allowedKeys[i] == vkCode)
-        {
-          return CallNextHookEx(hook, code, wParam, lParam);
-        }
-      }
-      printf("Blocking %i\n", vkCode);
-    }
-  }
-  return 1;
-}
-
-// Reads arguments from argv and populates
-// allowedKeys array
-void parseArgs(int argc, char *argv[])
-{
-  if (argc == 1)
-  {
-    puts("Blocking all keys");
-    return;
-  }
-
-  numberOfArguments = argc - 1;
-  allowedKeys = malloc(numberOfArguments);
-
-  puts("Blocking all keys except:");
-  for (int i = 1; i < argc; i++)
-  {
-
-    int keyIndex = i - 1;
-
-    char *param = argv[i];
-    char mappedString[64] = "";
-
-
-    if (strcmp(param, "space") == 0)
-    {
-      allowedKeys[keyIndex] = 0x20;
-      strcat(mappedString, "space");
-    }
-    else if (strcmp(param, "ctrl") == 0)
-    {
-      allowedKeys[keyIndex] = 0x11;
-      strcat(mappedString, "ctrl");
-    }
-    else if (strcmp(param, "0x") == 0)
-    {
-      // support for hex params like 0x12
-      // converts from hexadecimal char[] to int
-      allowedKeys[keyIndex] = (int)strtol(argv[i], NULL, 16);
-    }
-    else
-    {
-      // support for int
-      // converts char[] to int
-      allowedKeys[keyIndex] = atoi(argv[i]);
-    }
-
-    int key = allowedKeys[keyIndex];
-    printf("  0x%X - %d - %c - %s\n", key, key, key, mappedString);
-  }
+  puts("baby-keyboard.exe");
+  printf("Version: %s\n\n", VERSION_STRING);
+  puts("The simplest way to disable keyboard buttons!\n");
+  puts("By default, when running with no arguments, it will disable all the keys.");
+  puts("To allow specific keys, add them as arguments when running the program.");
+  puts("Each argument is a hex int, an int or a string shortcut.\n");
+  puts("The corresponding hex codes can be found here (the value column):");
+  puts("https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes\n");
+  puts("Example usage: baby-keyboard.exe space 0x21 67\n");
+  printf("Sample shortcuts: space, ctrl");
 }
 
 int main(int argc, char *argv[])
 {
   if (argc == 2)
   {
-    char *param2 = argv[1];
-    if (strcmp(param2, "help") == 0)
+    char *param = argv[1];
+    if (strcmp(param, "help") == 0)
     {
       printHelp();
       return 0;
     }
   }
 
-  // hook the hook
-  hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
-  if (hook == NULL)
-  {
-    puts("Error: could not initialize keyboard hook");
-    return 1;
-  }
-
-  parseArgs(argc, argv);
-  listen(msg);
-
-  puts("Done");
-  return 0;
+  parseConfig(argc, argv);
+  return runHook();
 }
