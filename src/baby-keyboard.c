@@ -11,13 +11,18 @@ void printHelp()
   puts("baby-keyboard.exe");
   printf("Version: %s\n\n", VERSION_STRING);
   puts("The simplest way to disable keyboard buttons!\n");
-  puts("By default, when running with no arguments, it will disable all the keys.");
-  puts("To allow specific keys, add them as arguments when running the program.");
-  puts("Each argument is a hex int, an int or a string shortcut.\n");
-  puts("The corresponding hex codes can be found here (the value column):");
+  puts("By default, when running with no arguments, it will disable all the keys:\n");
+  puts("  ./baby-keyboard.exe\n");
+  puts("To allow specific keys, add them as arguments when running the program:\n");
+  puts("  ./baby_keyboard.exe ctrl space numbers 65 0x66 c\n");
+  puts("Each argument can be a hex number, an int or a string shortcut.\n");
+  puts("The corresponding hex number can be found here (the value column):");
   puts("https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes\n");
-  puts("Example usage: baby-keyboard.exe space 0x21 67\n");
-  printf("Sample shortcuts: space, ctrl");
+  puts("int arguments are converted to char (will allow A key):");
+  puts("  ./baby-keyboard.exe 65\n");
+  puts("String shortcuts are: a to z (each letter), 0 to 9 (each number),");
+  puts("letters, numbers, arrow-keys, arrow-left, arrow-up, arrow-right, arrow-down");
+  puts("space, enter, tab, ctrl, alt");
 }
 
 int main(int argc, char *argv[])
@@ -28,6 +33,11 @@ int main(int argc, char *argv[])
     if (strcmp(param, "help") == 0)
     {
       printHelp();
+      return 0;
+    }
+    if (strcmp(param, "version") == 0)
+    {
+      printf("%s", VERSION_STRING);
       return 0;
     }
   }

@@ -1,7 +1,14 @@
 HHOOK hook;
 LPMSG msg;
-int *allowedKeys;
-int numberOfArguments;
+int *allowedKeys = NULL;
+int numberOfArguments = 0;
+
+#define ifParamIs(name, value) \
+    if (strcmp(param, name) == 0) \
+    { \
+      allowedKeys[keyIndex] = value; \
+      strcat(mappedString, name); \
+    }
 
 // The keyboard hook. If we want the key to work, we call CallNextHookEx,
 // otherwise we return 1
@@ -20,7 +27,7 @@ LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
         }
       }
 
-      printf("Blocking %i", vkCode);
+      printf("Blocking %i %c", vkCode, vkCode);
       if (wParam == WM_KEYDOWN)
       {
           printf(" down\n");
@@ -45,30 +52,101 @@ void parseConfig(int argc, char *argv[])
   }
 
   numberOfArguments = argc - 1;
-  allowedKeys = malloc(numberOfArguments);
+  allowedKeys = (int *)malloc(numberOfArguments * sizeof(int));
+  if (allowedKeys == NULL)
+  {
+    perror("Memory allocation failed");
+    // TODO: exit the program
+  }
+  // printf("%i\n", numberOfArguments);
 
   puts("Blocking all keys except:");
+  int extras = 0;
   for (int i = 1; i < argc; i++)
   {
-    int keyIndex = i - 1;
+    int keyIndex = i - 1 + extras;
     char *param = argv[i];
     char mappedString[64] = "";
 
     // TODO: map more characters
-    if (strcmp(param, "space") == 0)
+    ifParamIs("space", 0x20)
+    else ifParamIs("enter", 13)
+    else ifParamIs("tab", 9)
+    else ifParamIs("ctrl", 162) // TODO: add all ctrl buttons
+    else ifParamIs("alt", 164) // TODO: add all alt buttons
+    else ifParamIs("0", 48)
+    else ifParamIs("1", 49)
+    else ifParamIs("2", 50)
+    else ifParamIs("3", 51)
+    else ifParamIs("4", 52)
+    else ifParamIs("5", 53)
+    else ifParamIs("6", 54)
+    else ifParamIs("7", 55)
+    else ifParamIs("8", 56)
+    else ifParamIs("9", 57)
+    else if (strcmp(param, "numbers") == 0)
     {
-      allowedKeys[keyIndex] = 0x20;
-      strcat(mappedString, "space");
+      allowedKeys[keyIndex] = 48; // add 0
+
+      for (int j = 49; j <= 57; j++) {
+        numberOfArguments++;
+        allowedKeys = (int *)realloc(allowedKeys, numberOfArguments * sizeof(int));
+        allowedKeys[keyIndex + j - 48] = j;
+        extras++;
+      }
     }
-    else if (strcmp(param, "c") == 0)
+    else ifParamIs("a", 65)
+    else ifParamIs("b", 66)
+    else ifParamIs("c", 67)
+    else ifParamIs("d", 68)
+    else ifParamIs("e", 69)
+    else ifParamIs("f", 70)
+    else ifParamIs("g", 71)
+    else ifParamIs("h", 72)
+    else ifParamIs("i", 73)
+    else ifParamIs("j", 74)
+    else ifParamIs("k", 75)
+    else ifParamIs("l", 76)
+    else ifParamIs("m", 77)
+    else ifParamIs("n", 78)
+    else ifParamIs("o", 79)
+    else ifParamIs("p", 80)
+    else ifParamIs("q", 81)
+    else ifParamIs("r", 82)
+    else ifParamIs("s", 83)
+    else ifParamIs("t", 84)
+    else ifParamIs("u", 85)
+    else ifParamIs("v", 86)
+    else ifParamIs("w", 87)
+    else ifParamIs("x", 88)
+    else ifParamIs("y", 89)
+    else ifParamIs("z", 90)
+    else if (strcmp(param, "letters") == 0)
     {
-      allowedKeys[keyIndex] = 67;
-      strcat(mappedString, "c");
+      allowedKeys[keyIndex] = 65; // add A
+
+      for (int j = 66; j <= 90; j++) {
+        numberOfArguments++;
+        allowedKeys = (int *)realloc(allowedKeys, numberOfArguments * sizeof(int));
+        allowedKeys[keyIndex + j - 65] = j;
+        extras++;
+      }
     }
-    else if (strcmp(param, "ctrl") == 0)
+    else ifParamIs("arrow-left", 37)
+    else ifParamIs("arrow-up", 38)
+    else ifParamIs("arrow-right", 39)
+    else ifParamIs("arrow-down", 40)
+    else if (strcmp(param, "arrow-keys") == 0)
     {
-      allowedKeys[keyIndex] = 0xA2;
-      strcat(mappedString, "ctrl");
+      numberOfArguments += 3; // one added by default
+      allowedKeys = (int *)realloc(allowedKeys, numberOfArguments * sizeof(int));
+
+      allowedKeys[keyIndex] = 37; // left arrow
+      allowedKeys[keyIndex + 1] = 38; // up arrow
+      allowedKeys[keyIndex + 2] = 39; // right arrow
+      allowedKeys[keyIndex + 3] = 40; // down arrow
+
+      extras += 3;
     }
     else if (strncmp(param, "0x", 2) == 0) // starts with 0x
     { 
@@ -83,9 +161,16 @@ void parseConfig(int argc, char *argv[])
       allowedKeys[keyIndex] = atoi(argv[i]);
     }
 
-    int key = allowedKeys[keyIndex];
-    // TODO: better printing for %c and %s, not both in the same time
-    printf("  0x%X - %d - %c - %s\n", key, key, key, mappedString);
+    if (allowedKeys[keyIndex] == 0)
+    {
+      printf("  %s: uknown key\n", param);
+    }
+    else
+    {
+      int key = allowedKeys[keyIndex];
+      // TODO: better printing for %c and %s, not both in the same time
+      printf("  %s: 0x%X - %d - %c - %s\n", param, key, key, key, mappedString);
+    }
   }
 }
 
