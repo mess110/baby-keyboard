@@ -1,51 +1,40 @@
-# baby-keyboard
+# baby-keyboard.exe
 
-The simplest way to disable keyboard buttons!
+The simplest way to disable keyboard buttons and allow exceptions!
 
-Disable all or allow some keyboard buttons to work so the baby can smash away!
-
-## Features
-
-* super simple
 * blocks keys without disabling the keyboard
-* allows specified keys
+* allow specified keys
+* super simple to use
 * self-contained
 * open-source
 
-## Example usage
+## Usage
 
-To disable all the keys, run `baby-keyboard.exe`
+By default, when running with no arguments, it will disable all the keys:
 
-To disable all keys except `spacebar` and `g` run `baby-keyboard.exe 0x20 0x47`.
-See [Makefile](Makefile) for more examples.
+```
+./baby-keyboard.exe
+```
 
-To allow specific keys, add them as arguments when running the program.
-Each argument is a hex int. The corresponding keys can be found
-[here](https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes).
+To allow specific keys, add them as arguments when running the program:
 
-When you want to re-enable the keyboard buttons, just close the window.
+```
+./baby_keyboard.exe ctrl space numbers 65 0x66 c
+```
 
-Use Windows shortcuts to save preconfigured allowed keys options for easy access.
+To read more about usage:
+
+```
+./baby-keyboard.exe help
+```
 
 ## Build
 
-You need a c compiler installed.
+You need a c compiler and make installed.
 
 ```
 make build
+./baby-keyboard.exe ctrl c
 ```
 
-Tested on Windows 10.
-
-## Useful arguments
-
-| Arguments               | Description  |
-| ----------------------- | ------------ |
-| 0x25 0x26 0x27 0x28     | Arrow keys   |
-| 0x57 0x41 0x53 0x44     | WASD         |
-| 0x1B                    | Escape       |
-| 0x0D                    | Enter        |
-| 0xA2                    | Control      |
-| 0x12                    | Alt          |
-| 0x10                    | Shift        |
-| 0x20                    | Space        |
+Tested on Windows 11, initially built on Windows 10.

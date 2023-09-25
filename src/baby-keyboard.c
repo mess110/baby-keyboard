@@ -10,7 +10,7 @@ void printHelp()
 {
   puts("baby-keyboard.exe");
   printf("Version: %s\n\n", VERSION_STRING);
-  puts("The simplest way to disable keyboard buttons!\n");
+  puts("The simplest way to disable keyboard buttons and allow exceptions!\n");
   puts("By default, when running with no arguments, it will disable all the keys:\n");
   puts("  ./baby-keyboard.exe\n");
   puts("To allow specific keys, add them as arguments when running the program:\n");
@@ -22,7 +22,7 @@ void printHelp()
   puts("  ./baby-keyboard.exe 65\n");
   puts("String shortcuts are: a to z (each letter), 0 to 9 (each number),");
   puts("letters, numbers, arrow-keys, arrow-left, arrow-up, arrow-right, arrow-down");
-  puts("space, enter, tab, ctrl, alt");
+  printf("space, enter, tab, ctrl, alt");
 }
 
 int main(int argc, char *argv[])
